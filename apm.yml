@@ -1,0 +1,28 @@
+name: fs-tin-ha-tai-ping
+version: 0.1.0
+description: Tin Ha Tai Ping - a game built with the fs-agentic-flow team
+author: frankielee
+# Which agent platforms to deploy to.
+# Resolution order: --target flag > this field > auto-detect from filesystem.
+targets:
+  - claude
+  - hermes
+  - codex
+  - copilot
+  - opencode
+dependencies:
+  apm:
+    - mattpocock/skills
+    # The fs-* agentic software team (PM, architect, designer, dev bench,
+    # QA, devops, doctor, ai-expert, memory). Source of truth lives in
+    # ../fs-agentic-flow (private repo, sibling checkout) - edit skills
+    # there, never in deployed output.
+    - ../fs-agentic-flow
+  mcp: []
+includes: auto
+lifecycle:
+  post-install:
+    - type: command
+      description: "fs-doctor: verify MCP servers, plugins, and local services"
+      bash: "bash ../fs-agentic-flow/scripts/doctor.sh"
+      timeoutSec: 60
