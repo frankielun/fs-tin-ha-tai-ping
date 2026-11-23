@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "R3F Renderer Spike",
+    "slug": "tin-ha-tai-ping-r3f-spike",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.anonymous.tin-ha-tai-ping-r3f-spike"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#111827"
+      },
+      "package": "com.anonymous.tinhataipingr3fspike"
+    }
+  }
+}
