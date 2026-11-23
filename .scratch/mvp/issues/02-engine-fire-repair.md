@@ -7,7 +7,15 @@ legality, hit/center/miss damage (1 / 2 / 0), overflow cascade
 
 **Blocked by:** 01 — Headless rules engine core
 
-**Status:** ready-for-agent
+**Status:** done ✅ (absorbed into ticket 01's implementation, 2026-11-23)
+
+Ticket 01's brief included the full command set (resolveFire + cascade +
+repair), so all of this ticket's acceptance criteria were delivered and
+verified there: cascade overflow permutation walk, target legality by
+layer, repair ordering, and miss handling all have dedicated passing tests
+(src/engine/engine.test.ts: "cascades center-hit overflow…", "walks the
+complete cascade permutation…", "applies miss as zero damage…", "repairs
+the earliest destroyed piece…"). No separate agent dispatched.
 
 - [ ] A 2-dmg center hit that destroys a 1-HP shield applies the remaining
       1 dmg to the next target in cascade order

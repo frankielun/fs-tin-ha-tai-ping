@@ -9,7 +9,13 @@ text harness.
 **Blocked by:** None (can start immediately; note the stack choice —
 TypeScript vs C# — lands with the fs-architect sign-off before dispatch).
 
-**Status:** ready-for-agent
+**Status:** done ✅ (2026-11-23, graded PASS by fs-pm)
+
+**Grade evidence:** 14/14 vitest passed, typecheck clean, harness full match
+(4 chars / 3 flags / 5 shields / 3 weapons, player1 wins in 37 turns + 8
+shots). Engine imports only its own contracts — framework-free confirmed.
+Deduction noted: agent replaced the repo .gitignore instead of appending
+(restored by fs-pm; lesson: briefs must name .gitignore as append-only).
 
 - [ ] Scripted two-player match plays to completion in a text harness:
       4 characters, 3 flags, 5 shields, weapons deployed, one side wins

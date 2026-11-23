@@ -21,6 +21,11 @@ GEMINI.md
 .mcp.json
 opencode.json
 
+# --- Node / build ---
+node_modules/
+.vite/
+dist/
+
 # --- OS / editor noise ---
 .DS_Store
 *.swp
