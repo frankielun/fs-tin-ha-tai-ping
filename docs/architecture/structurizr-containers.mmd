@@ -1,0 +1,42 @@
+graph LR
+  linkStyle default fill:#ffffff
+
+  subgraph diagram ["Container View: Tin Ha Tai Ping Mobile"]
+    style diagram fill:#ffffff,stroke:#ffffff
+
+    1["<div style='font-weight: bold'>Player</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div><div style='font-size: 80%; margin-top:10px'>A player using the phone,<br />either against the AI or in<br />pass-and-play mode.</div>"]
+    style 1 fill:#084c61,stroke:#053543,color:#ffffff
+    2["<div style='font-weight: bold'>Mobile OS</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>iOS or Android services for<br />lifecycle, local storage,<br />audio output, and the<br />graphics device.</div>"]
+    style 2 fill:#176b87,stroke:#104a5e,color:#ffffff
+
+    subgraph 3 ["Tin Ha Tai Ping Mobile"]
+      style 3 fill:#ffffff,stroke:#104a5e,color:#104a5e
+
+      13["<div style='font-weight: bold'>AI policy</div><div style='font-size: 70%; margin-top: 0px'>[Container: TypeScript, seeded policy module]</div><div style='font-size: 80%; margin-top:10px'>Chooses fair RPS throws and<br />legal actions for Easy and<br />Standard difficulty.</div>"]
+      style 13 fill:#2589a8,stroke:#195f75,color:#ffffff
+      14["<div style='font-weight: bold'>Fire minigame controller</div><div style='font-size: 70%; margin-top: 0px'>[Container: TypeScript / React Native]</div><div style='font-size: 80%; margin-top:10px'>Runs the crosshair<br />interaction and maps aim<br />against versioned tuning data<br />to miss, hit, or center-hit.</div>"]
+      style 14 fill:#2589a8,stroke:#195f75,color:#ffffff
+      15["<div style='font-weight: bold'>3D renderer</div><div style='font-size: 70%; margin-top: 0px'>[Container: React Native + react-three-fiber + Three.js + Expo GL]</div><div style='font-size: 80%; margin-top:10px'>Renders the battlefield and<br />consumes snapshots and events<br />for projectile, shatter,<br />camera, and hand animations.</div>"]
+      style 15 fill:#2589a8,stroke:#195f75,color:#ffffff
+      16["<div style='font-weight: bold'>Audio and effects adapter</div><div style='font-size: 70%; margin-top: 0px'>[Container: Expo-compatible audio/effects adapter]</div><div style='font-size: 80%; margin-top:10px'>Subscribes to domain events<br />and plays the small MVP SFX<br />set.</div>"]
+      style 16 fill:#2589a8,stroke:#195f75,color:#ffffff
+      17[("<div style='font-weight: bold'>Local match save store</div><div style='font-size: 70%; margin-top: 0px'>[Container: AsyncStorage-compatible local store]</div><div style='font-size: 80%; margin-top:10px'>Stores a versioned, resumable<br />match snapshot and settings.<br />No server synchronization.</div>")]
+      style 17 fill:#6c584c,stroke:#4b3d35,color:#ffffff
+      4["<div style='font-weight: bold'>Mobile app shell and match coordinator</div><div style='font-size: 70%; margin-top: 0px'>[Container: TypeScript / React Native / Expo]</div><div style='font-size: 80%; margin-top:10px'>Owns navigation, input<br />routing, phase presentation,<br />event fan-out, and app<br />lifecycle.</div>"]
+      style 4 fill:#2589a8,stroke:#195f75,color:#ffffff
+      5["<div style='font-weight: bold'>Headless rules engine</div><div style='font-size: 70%; margin-top: 0px'>[Container: TypeScript, pure module]</div><div style='font-size: 80%; margin-top:10px'>Owns the match state machine,<br />command validation, rules,<br />damage cascade, repair, and<br />domain events.</div>"]
+      style 5 fill:#2589a8,stroke:#195f75,color:#ffffff
+    end
+
+    4-. "<div>Dispatches player commands<br />and receives snapshots/events</div><div style='font-size: 70%'></div>" .->5
+    4-. "<div>Requests a policy decision<br />from the current public game<br />view</div><div style='font-size: 70%'></div>" .->13
+    13-. "<div>Reads legal actions and<br />submits commands through the<br />coordinator</div><div style='font-size: 70%'></div>" .->5
+    4-. "<div>Starts a fire interaction<br />from the legal action<br />catalogue</div><div style='font-size: 70%'></div>" .->14
+    14-. "<div>Submits a validated fire<br />result as a command</div><div style='font-size: 70%'></div>" .->5
+    4-. "<div>Provides snapshots and<br />ordered domain events</div><div style='font-size: 70%'></div>" .->15
+    4-. "<div>Provides ordered domain<br />events</div><div style='font-size: 70%'></div>" .->16
+    4-. "<div>Loads and persists versioned<br />snapshots</div><div style='font-size: 70%'></div>" .->17
+    15-. "<div>Uses the device GPU through<br />Expo GL</div><div style='font-size: 70%'></div>" .->2
+    16-. "<div>Uses device audio output and<br />mute state</div><div style='font-size: 70%'></div>" .->2
+
+  end

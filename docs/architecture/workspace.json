@@ -1,0 +1,529 @@
+{
+  "configuration" : { },
+  "description" : "C4 architecture for the Tin Ha Tai Ping mobile MVP",
+  "documentation" : { },
+  "id" : 0,
+  "model" : {
+    "people" : [ {
+      "description" : "A player using the phone, either against the AI or in pass-and-play mode.",
+      "id" : "1",
+      "name" : "Player",
+      "properties" : {
+        "structurizr.dsl.identifier" : "player"
+      },
+      "relationships" : [ {
+        "description" : "Plays offline matches",
+        "destinationId" : "3",
+        "id" : "18",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "description" : "iOS or Android services for lifecycle, local storage, audio output, and the graphics device.",
+      "documentation" : { },
+      "id" : "2",
+      "name" : "Mobile OS",
+      "properties" : {
+        "structurizr.dsl.identifier" : "mobileOS"
+      },
+      "tags" : "Element,Software System"
+    }, {
+      "containers" : [ {
+        "description" : "Owns navigation, input routing, phase presentation, event fan-out, and app lifecycle.",
+        "documentation" : { },
+        "id" : "4",
+        "name" : "Mobile app shell and match coordinator",
+        "properties" : {
+          "structurizr.dsl.identifier" : "app"
+        },
+        "relationships" : [ {
+          "description" : "Dispatches player commands and receives snapshots/events",
+          "destinationId" : "5",
+          "id" : "20",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Requests a policy decision from the current public game view",
+          "destinationId" : "13",
+          "id" : "21",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Starts a fire interaction from the legal action catalogue",
+          "destinationId" : "14",
+          "id" : "23",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Provides snapshots and ordered domain events",
+          "destinationId" : "15",
+          "id" : "25",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Provides ordered domain events",
+          "destinationId" : "16",
+          "id" : "26",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Loads and persists versioned snapshots",
+          "destinationId" : "17",
+          "id" : "27",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "TypeScript / React Native / Expo"
+      }, {
+        "components" : [ {
+          "description" : "Owns phase transitions and the canonical match snapshot.",
+          "documentation" : { },
+          "id" : "6",
+          "name" : "Match aggregate and state machine",
+          "properties" : {
+            "structurizr.dsl.identifier" : "matchAggregate"
+          },
+          "relationships" : [ {
+            "description" : "Asks for legal transitions",
+            "destinationId" : "7",
+            "id" : "30",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Resolves submitted throws",
+            "destinationId" : "8",
+            "id" : "31",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Applies build and repair transitions",
+            "destinationId" : "9",
+            "id" : "32",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Applies fire and damage transitions",
+            "destinationId" : "10",
+            "id" : "33",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Records accepted domain facts",
+            "destinationId" : "11",
+            "id" : "34",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Projects immutable public state",
+            "destinationId" : "12",
+            "id" : "35",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "TypeScript"
+        }, {
+          "description" : "Derives legal actions, legal targets, build caps, and phase gates.",
+          "documentation" : { },
+          "id" : "7",
+          "name" : "Legality and action catalogue",
+          "properties" : {
+            "structurizr.dsl.identifier" : "legality"
+          },
+          "relationships" : [ {
+            "description" : "Checks build and repair legality",
+            "destinationId" : "9",
+            "id" : "36",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Checks weapon and target legality",
+            "destinationId" : "10",
+            "id" : "37",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "TypeScript"
+        }, {
+          "description" : "Resolves submitted throws without exposing a pending pass-and-play choice.",
+          "documentation" : { },
+          "id" : "8",
+          "name" : "RPS resolver",
+          "properties" : {
+            "structurizr.dsl.identifier" : "rps"
+          },
+          "tags" : "Element,Component",
+          "technology" : "TypeScript"
+        }, {
+          "description" : "Applies character, flag, shield, weapon, and repair rules.",
+          "documentation" : { },
+          "id" : "9",
+          "name" : "Build and repair rules",
+          "properties" : {
+            "structurizr.dsl.identifier" : "build"
+          },
+          "tags" : "Element,Component",
+          "technology" : "TypeScript"
+        }, {
+          "description" : "Validates a shot, applies 0/1/2 damage, and cascades overflow.",
+          "documentation" : { },
+          "id" : "10",
+          "name" : "Fire and damage resolver",
+          "properties" : {
+            "structurizr.dsl.identifier" : "fireResolver"
+          },
+          "tags" : "Element,Component",
+          "technology" : "TypeScript"
+        }, {
+          "description" : "Emits ordered facts after each accepted command.",
+          "documentation" : { },
+          "id" : "11",
+          "name" : "Domain event collector",
+          "properties" : {
+            "structurizr.dsl.identifier" : "events"
+          },
+          "relationships" : [ {
+            "description" : "Publishes the committed sequence and snapshot",
+            "destinationId" : "12",
+            "id" : "38",
+            "sourceId" : "11",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "TypeScript"
+        }, {
+          "description" : "Returns immutable snapshots with pending private choices redacted.",
+          "documentation" : { },
+          "id" : "12",
+          "name" : "Snapshot and public projection",
+          "properties" : {
+            "structurizr.dsl.identifier" : "projection"
+          },
+          "tags" : "Element,Component",
+          "technology" : "TypeScript"
+        } ],
+        "description" : "Owns the match state machine, command validation, rules, damage cascade, repair, and domain events.",
+        "documentation" : { },
+        "id" : "5",
+        "name" : "Headless rules engine",
+        "properties" : {
+          "structurizr.dsl.identifier" : "engine"
+        },
+        "tags" : "Element,Container",
+        "technology" : "TypeScript, pure module"
+      }, {
+        "description" : "Chooses fair RPS throws and legal actions for Easy and Standard difficulty.",
+        "documentation" : { },
+        "id" : "13",
+        "name" : "AI policy",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ai"
+        },
+        "relationships" : [ {
+          "description" : "Reads legal actions and submits commands through the coordinator",
+          "destinationId" : "5",
+          "id" : "22",
+          "sourceId" : "13",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "TypeScript, seeded policy module"
+      }, {
+        "description" : "Runs the crosshair interaction and maps aim against versioned tuning data to miss, hit, or center-hit.",
+        "documentation" : { },
+        "id" : "14",
+        "name" : "Fire minigame controller",
+        "properties" : {
+          "structurizr.dsl.identifier" : "fire"
+        },
+        "relationships" : [ {
+          "description" : "Submits a validated fire result as a command",
+          "destinationId" : "5",
+          "id" : "24",
+          "sourceId" : "14",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "TypeScript / React Native"
+      }, {
+        "description" : "Renders the battlefield and consumes snapshots and events for projectile, shatter, camera, and hand animations.",
+        "documentation" : { },
+        "id" : "15",
+        "name" : "3D renderer",
+        "properties" : {
+          "structurizr.dsl.identifier" : "renderer"
+        },
+        "relationships" : [ {
+          "description" : "Uses the device GPU through Expo GL",
+          "destinationId" : "2",
+          "id" : "28",
+          "sourceId" : "15",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "React Native + react-three-fiber + Three.js + Expo GL"
+      }, {
+        "description" : "Subscribes to domain events and plays the small MVP SFX set.",
+        "documentation" : { },
+        "id" : "16",
+        "name" : "Audio and effects adapter",
+        "properties" : {
+          "structurizr.dsl.identifier" : "audio"
+        },
+        "relationships" : [ {
+          "description" : "Uses device audio output and mute state",
+          "destinationId" : "2",
+          "id" : "29",
+          "sourceId" : "16",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Expo-compatible audio/effects adapter"
+      }, {
+        "description" : "Stores a versioned, resumable match snapshot and settings. No server synchronization.",
+        "documentation" : { },
+        "id" : "17",
+        "name" : "Local match save store",
+        "properties" : {
+          "structurizr.dsl.identifier" : "store"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "AsyncStorage-compatible local store"
+      } ],
+      "description" : "A portrait, offline 3D remake of the Hong Kong classroom game.",
+      "documentation" : { },
+      "id" : "3",
+      "name" : "Tin Ha Tai Ping Mobile",
+      "properties" : {
+        "structurizr.dsl.identifier" : "game"
+      },
+      "relationships" : [ {
+        "description" : "Uses lifecycle, local storage, audio, and graphics APIs",
+        "destinationId" : "2",
+        "id" : "19",
+        "sourceId" : "3",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "tin-ha-tai-ping",
+  "properties" : {
+    "structurizr.inspection.error" : "24",
+    "structurizr.dsl" : "d29ya3NwYWNlICJ0aW4taGEtdGFpLXBpbmciICJDNCBhcmNoaXRlY3R1cmUgZm9yIHRoZSBUaW4gSGEgVGFpIFBpbmcgbW9iaWxlIE1WUCIgewogIG1vZGVsIHsKICAgIHBsYXllciA9IHBlcnNvbiAiUGxheWVyIiAiQSBwbGF5ZXIgdXNpbmcgdGhlIHBob25lLCBlaXRoZXIgYWdhaW5zdCB0aGUgQUkgb3IgaW4gcGFzcy1hbmQtcGxheSBtb2RlLiIKICAgIG1vYmlsZU9TID0gc29mdHdhcmVTeXN0ZW0gIk1vYmlsZSBPUyIgImlPUyBvciBBbmRyb2lkIHNlcnZpY2VzIGZvciBsaWZlY3ljbGUsIGxvY2FsIHN0b3JhZ2UsIGF1ZGlvIG91dHB1dCwgYW5kIHRoZSBncmFwaGljcyBkZXZpY2UuIgogICAgZ2FtZSA9IHNvZnR3YXJlU3lzdGVtICJUaW4gSGEgVGFpIFBpbmcgTW9iaWxlIiAiQSBwb3J0cmFpdCwgb2ZmbGluZSAzRCByZW1ha2Ugb2YgdGhlIEhvbmcgS29uZyBjbGFzc3Jvb20gZ2FtZS4iIHsKICAgICAgYXBwID0gY29udGFpbmVyICJNb2JpbGUgYXBwIHNoZWxsIGFuZCBtYXRjaCBjb29yZGluYXRvciIgIk93bnMgbmF2aWdhdGlvbiwgaW5wdXQgcm91dGluZywgcGhhc2UgcHJlc2VudGF0aW9uLCBldmVudCBmYW4tb3V0LCBhbmQgYXBwIGxpZmVjeWNsZS4iICJUeXBlU2NyaXB0IC8gUmVhY3QgTmF0aXZlIC8gRXhwbyIKICAgICAgZW5naW5lID0gY29udGFpbmVyICJIZWFkbGVzcyBydWxlcyBlbmdpbmUiICJPd25zIHRoZSBtYXRjaCBzdGF0ZSBtYWNoaW5lLCBjb21tYW5kIHZhbGlkYXRpb24sIHJ1bGVzLCBkYW1hZ2UgY2FzY2FkZSwgcmVwYWlyLCBhbmQgZG9tYWluIGV2ZW50cy4iICJUeXBlU2NyaXB0LCBwdXJlIG1vZHVsZSIgewogICAgICAgIG1hdGNoQWdncmVnYXRlID0gY29tcG9uZW50ICJNYXRjaCBhZ2dyZWdhdGUgYW5kIHN0YXRlIG1hY2hpbmUiICJPd25zIHBoYXNlIHRyYW5zaXRpb25zIGFuZCB0aGUgY2Fub25pY2FsIG1hdGNoIHNuYXBzaG90LiIgIlR5cGVTY3JpcHQiCiAgICAgICAgbGVnYWxpdHkgPSBjb21wb25lbnQgIkxlZ2FsaXR5IGFuZCBhY3Rpb24gY2F0YWxvZ3VlIiAiRGVyaXZlcyBsZWdhbCBhY3Rpb25zLCBsZWdhbCB0YXJnZXRzLCBidWlsZCBjYXBzLCBhbmQgcGhhc2UgZ2F0ZXMuIiAiVHlwZVNjcmlwdCIKICAgICAgICBycHMgPSBjb21wb25lbnQgIlJQUyByZXNvbHZlciIgIlJlc29sdmVzIHN1Ym1pdHRlZCB0aHJvd3Mgd2l0aG91dCBleHBvc2luZyBhIHBlbmRpbmcgcGFzcy1hbmQtcGxheSBjaG9pY2UuIiAiVHlwZVNjcmlwdCIKICAgICAgICBidWlsZCA9IGNvbXBvbmVudCAiQnVpbGQgYW5kIHJlcGFpciBydWxlcyIgIkFwcGxpZXMgY2hhcmFjdGVyLCBmbGFnLCBzaGllbGQsIHdlYXBvbiwgYW5kIHJlcGFpciBydWxlcy4iICJUeXBlU2NyaXB0IgogICAgICAgIGZpcmVSZXNvbHZlciA9IGNvbXBvbmVudCAiRmlyZSBhbmQgZGFtYWdlIHJlc29sdmVyIiAiVmFsaWRhdGVzIGEgc2hvdCwgYXBwbGllcyAwLzEvMiBkYW1hZ2UsIGFuZCBjYXNjYWRlcyBvdmVyZmxvdy4iICJUeXBlU2NyaXB0IgogICAgICAgIGV2ZW50cyA9IGNvbXBvbmVudCAiRG9tYWluIGV2ZW50IGNvbGxlY3RvciIgIkVtaXRzIG9yZGVyZWQgZmFjdHMgYWZ0ZXIgZWFjaCBhY2NlcHRlZCBjb21tYW5kLiIgIlR5cGVTY3JpcHQiCiAgICAgICAgcHJvamVjdGlvbiA9IGNvbXBvbmVudCAiU25hcHNob3QgYW5kIHB1YmxpYyBwcm9qZWN0aW9uIiAiUmV0dXJucyBpbW11dGFibGUgc25hcHNob3RzIHdpdGggcGVuZGluZyBwcml2YXRlIGNob2ljZXMgcmVkYWN0ZWQuIiAiVHlwZVNjcmlwdCIKICAgICAgfQogICAgICBhaSA9IGNvbnRhaW5lciAiQUkgcG9saWN5IiAiQ2hvb3NlcyBmYWlyIFJQUyB0aHJvd3MgYW5kIGxlZ2FsIGFjdGlvbnMgZm9yIEVhc3kgYW5kIFN0YW5kYXJkIGRpZmZpY3VsdHkuIiAiVHlwZVNjcmlwdCwgc2VlZGVkIHBvbGljeSBtb2R1bGUiCiAgICAgIGZpcmUgPSBjb250YWluZXIgIkZpcmUgbWluaWdhbWUgY29udHJvbGxlciIgIlJ1bnMgdGhlIGNyb3NzaGFpciBpbnRlcmFjdGlvbiBhbmQgbWFwcyBhaW0gYWdhaW5zdCB2ZXJzaW9uZWQgdHVuaW5nIGRhdGEgdG8gbWlzcywgaGl0LCBvciBjZW50ZXItaGl0LiIgIlR5cGVTY3JpcHQgLyBSZWFjdCBOYXRpdmUiCiAgICAgIHJlbmRlcmVyID0gY29udGFpbmVyICIzRCByZW5kZXJlciIgIlJlbmRlcnMgdGhlIGJhdHRsZWZpZWxkIGFuZCBjb25zdW1lcyBzbmFwc2hvdHMgYW5kIGV2ZW50cyBmb3IgcHJvamVjdGlsZSwgc2hhdHRlciwgY2FtZXJhLCBhbmQgaGFuZCBhbmltYXRpb25zLiIgIlJlYWN0IE5hdGl2ZSArIHJlYWN0LXRocmVlLWZpYmVyICsgVGhyZWUuanMgKyBFeHBvIEdMIgogICAgICBhdWRpbyA9IGNvbnRhaW5lciAiQXVkaW8gYW5kIGVmZmVjdHMgYWRhcHRlciIgIlN1YnNjcmliZXMgdG8gZG9tYWluIGV2ZW50cyBhbmQgcGxheXMgdGhlIHNtYWxsIE1WUCBTRlggc2V0LiIgIkV4cG8tY29tcGF0aWJsZSBhdWRpby9lZmZlY3RzIGFkYXB0ZXIiCiAgICAgIHN0b3JlID0gY29udGFpbmVyICJMb2NhbCBtYXRjaCBzYXZlIHN0b3JlIiAiU3RvcmVzIGEgdmVyc2lvbmVkLCByZXN1bWFibGUgbWF0Y2ggc25hcHNob3QgYW5kIHNldHRpbmdzLiBObyBzZXJ2ZXIgc3luY2hyb25pemF0aW9uLiIgIkFzeW5jU3RvcmFnZS1jb21wYXRpYmxlIGxvY2FsIHN0b3JlIiB7CiAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgIH0KICAgIH0KCiAgICBwbGF5ZXIgLT4gZ2FtZSAiUGxheXMgb2ZmbGluZSBtYXRjaGVzIgogICAgZ2FtZSAtPiBtb2JpbGVPUyAiVXNlcyBsaWZlY3ljbGUsIGxvY2FsIHN0b3JhZ2UsIGF1ZGlvLCBhbmQgZ3JhcGhpY3MgQVBJcyIKCiAgICBhcHAgLT4gZW5naW5lICJEaXNwYXRjaGVzIHBsYXllciBjb21tYW5kcyBhbmQgcmVjZWl2ZXMgc25hcHNob3RzL2V2ZW50cyIKICAgIGFwcCAtPiBhaSAiUmVxdWVzdHMgYSBwb2xpY3kgZGVjaXNpb24gZnJvbSB0aGUgY3VycmVudCBwdWJsaWMgZ2FtZSB2aWV3IgogICAgYWkgLT4gZW5naW5lICJSZWFkcyBsZWdhbCBhY3Rpb25zIGFuZCBzdWJtaXRzIGNvbW1hbmRzIHRocm91Z2ggdGhlIGNvb3JkaW5hdG9yIgogICAgYXBwIC0+IGZpcmUgIlN0YXJ0cyBhIGZpcmUgaW50ZXJhY3Rpb24gZnJvbSB0aGUgbGVnYWwgYWN0aW9uIGNhdGFsb2d1ZSIKICAgIGZpcmUgLT4gZW5naW5lICJTdWJtaXRzIGEgdmFsaWRhdGVkIGZpcmUgcmVzdWx0IGFzIGEgY29tbWFuZCIKICAgIGFwcCAtPiByZW5kZXJlciAiUHJvdmlkZXMgc25hcHNob3RzIGFuZCBvcmRlcmVkIGRvbWFpbiBldmVudHMiCiAgICBhcHAgLT4gYXVkaW8gIlByb3ZpZGVzIG9yZGVyZWQgZG9tYWluIGV2ZW50cyIKICAgIGFwcCAtPiBzdG9yZSAiTG9hZHMgYW5kIHBlcnNpc3RzIHZlcnNpb25lZCBzbmFwc2hvdHMiCiAgICByZW5kZXJlciAtPiBtb2JpbGVPUyAiVXNlcyB0aGUgZGV2aWNlIEdQVSB0aHJvdWdoIEV4cG8gR0wiCiAgICBhdWRpbyAtPiBtb2JpbGVPUyAiVXNlcyBkZXZpY2UgYXVkaW8gb3V0cHV0IGFuZCBtdXRlIHN0YXRlIgoKICAgIG1hdGNoQWdncmVnYXRlIC0+IGxlZ2FsaXR5ICJBc2tzIGZvciBsZWdhbCB0cmFuc2l0aW9ucyIKICAgIG1hdGNoQWdncmVnYXRlIC0+IHJwcyAiUmVzb2x2ZXMgc3VibWl0dGVkIHRocm93cyIKICAgIG1hdGNoQWdncmVnYXRlIC0+IGJ1aWxkICJBcHBsaWVzIGJ1aWxkIGFuZCByZXBhaXIgdHJhbnNpdGlvbnMiCiAgICBtYXRjaEFnZ3JlZ2F0ZSAtPiBmaXJlUmVzb2x2ZXIgIkFwcGxpZXMgZmlyZSBhbmQgZGFtYWdlIHRyYW5zaXRpb25zIgogICAgbWF0Y2hBZ2dyZWdhdGUgLT4gZXZlbnRzICJSZWNvcmRzIGFjY2VwdGVkIGRvbWFpbiBmYWN0cyIKICAgIG1hdGNoQWdncmVnYXRlIC0+IHByb2plY3Rpb24gIlByb2plY3RzIGltbXV0YWJsZSBwdWJsaWMgc3RhdGUiCiAgICBsZWdhbGl0eSAtPiBidWlsZCAiQ2hlY2tzIGJ1aWxkIGFuZCByZXBhaXIgbGVnYWxpdHkiCiAgICBsZWdhbGl0eSAtPiBmaXJlUmVzb2x2ZXIgIkNoZWNrcyB3ZWFwb24gYW5kIHRhcmdldCBsZWdhbGl0eSIKICAgIGV2ZW50cyAtPiBwcm9qZWN0aW9uICJQdWJsaXNoZXMgdGhlIGNvbW1pdHRlZCBzZXF1ZW5jZSBhbmQgc25hcHNob3QiCiAgfQoKICB2aWV3cyB7CiAgICBzeXN0ZW1Db250ZXh0IGdhbWUgImNvbnRleHQiIHsKICAgICAgaW5jbHVkZSBwbGF5ZXIKICAgICAgaW5jbHVkZSBnYW1lCiAgICAgIGluY2x1ZGUgbW9iaWxlT1MKICAgICAgYXV0b2xheW91dCBscgogICAgfQoKICAgIGNvbnRhaW5lciBnYW1lICJjb250YWluZXJzIiB7CiAgICAgIGluY2x1ZGUgcGxheWVyCiAgICAgIGluY2x1ZGUgYXBwCiAgICAgIGluY2x1ZGUgZW5naW5lCiAgICAgIGluY2x1ZGUgYWkKICAgICAgaW5jbHVkZSBmaXJlCiAgICAgIGluY2x1ZGUgcmVuZGVyZXIKICAgICAgaW5jbHVkZSBhdWRpbwogICAgICBpbmNsdWRlIHN0b3JlCiAgICAgIGluY2x1ZGUgbW9iaWxlT1MKICAgICAgYXV0b2xheW91dCBscgogICAgfQoKICAgIGNvbXBvbmVudCBlbmdpbmUgImVuZ2luZS1jb21wb25lbnRzIiB7CiAgICAgIGluY2x1ZGUgYXBwCiAgICAgIGluY2x1ZGUgbWF0Y2hBZ2dyZWdhdGUKICAgICAgaW5jbHVkZSBsZWdhbGl0eQogICAgICBpbmNsdWRlIHJwcwogICAgICBpbmNsdWRlIGJ1aWxkCiAgICAgIGluY2x1ZGUgZmlyZVJlc29sdmVyCiAgICAgIGluY2x1ZGUgZXZlbnRzCiAgICAgIGluY2x1ZGUgcHJvamVjdGlvbgogICAgICBhdXRvbGF5b3V0IGxyCiAgICB9CgogICAgc3R5bGVzIHsKICAgICAgZWxlbWVudCAiUGVyc29uIiB7CiAgICAgICAgYmFja2dyb3VuZCAjMDg0YzYxCiAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgIHNoYXBlIHBlcnNvbgogICAgICB9CiAgICAgIGVsZW1lbnQgIlNvZnR3YXJlIFN5c3RlbSIgewogICAgICAgIGJhY2tncm91bmQgIzE3NmI4NwogICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgfQogICAgICBlbGVtZW50ICJDb250YWluZXIiIHsKICAgICAgICBiYWNrZ3JvdW5kICMyNTg5YTgKICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgIH0KICAgICAgZWxlbWVudCAiQ29tcG9uZW50IiB7CiAgICAgICAgYmFja2dyb3VuZCAjNjJiNmNiCiAgICAgICAgY29sb3IgIzEwMmE0MwogICAgICB9CiAgICAgIGVsZW1lbnQgIkRhdGFiYXNlIiB7CiAgICAgICAgYmFja2dyb3VuZCAjNmM1ODRjCiAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgIHNoYXBlIGN5bGluZGVyCiAgICAgIH0KICAgIH0KICB9Cn0=",
+    "structurizr.inspection.info" : "0",
+    "structurizr.inspection.ignore" : "0",
+    "structurizr.inspection.warning" : "0"
+  },
+  "views" : {
+    "componentViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "5",
+      "elements" : [ {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "engine-components",
+      "name" : "Component View: Tin Ha Tai Ping Mobile - Headless rules engine",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "30"
+      }, {
+        "id" : "31"
+      }, {
+        "id" : "32"
+      }, {
+        "id" : "33"
+      }, {
+        "id" : "34"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "36"
+      }, {
+        "id" : "37"
+      }, {
+        "id" : "38"
+      } ]
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "styles" : {
+        "elements" : [ {
+          "background" : "#62b6cb",
+          "color" : "#102a43",
+          "tag" : "Component"
+        }, {
+          "background" : "#2589a8",
+          "color" : "#ffffff",
+          "tag" : "Container"
+        }, {
+          "background" : "#6c584c",
+          "color" : "#ffffff",
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        }, {
+          "background" : "#084c61",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#176b87",
+          "color" : "#ffffff",
+          "tag" : "Software System"
+        } ]
+      },
+      "terminology" : { }
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "13",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "16",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "17",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "containers",
+      "name" : "Container View: Tin Ha Tai Ping Mobile",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "20"
+      }, {
+        "id" : "21"
+      }, {
+        "id" : "22"
+      }, {
+        "id" : "23"
+      }, {
+        "id" : "24"
+      }, {
+        "id" : "25"
+      }, {
+        "id" : "26"
+      }, {
+        "id" : "27"
+      }, {
+        "id" : "28"
+      }, {
+        "id" : "29"
+      } ],
+      "softwareSystemId" : "3"
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "context",
+      "name" : "System Context View: Tin Ha Tai Ping Mobile",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "18"
+      }, {
+        "id" : "19"
+      } ],
+      "softwareSystemId" : "3"
+    } ]
+  }
+}

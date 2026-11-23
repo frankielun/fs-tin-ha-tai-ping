@@ -1,0 +1,17 @@
+graph LR
+  linkStyle default fill:#ffffff
+
+  subgraph diagram ["System Context View: Tin Ha Tai Ping Mobile"]
+    style diagram fill:#ffffff,stroke:#ffffff
+
+    1["<div style='font-weight: bold'>Player</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div><div style='font-size: 80%; margin-top:10px'>A player using the phone,<br />either against the AI or in<br />pass-and-play mode.</div>"]
+    style 1 fill:#084c61,stroke:#053543,color:#ffffff
+    2["<div style='font-weight: bold'>Mobile OS</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>iOS or Android services for<br />lifecycle, local storage,<br />audio output, and the<br />graphics device.</div>"]
+    style 2 fill:#176b87,stroke:#104a5e,color:#ffffff
+    3["<div style='font-weight: bold'>Tin Ha Tai Ping Mobile</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>A portrait, offline 3D remake<br />of the Hong Kong classroom<br />game.</div>"]
+    style 3 fill:#176b87,stroke:#104a5e,color:#ffffff
+
+    1-. "<div>Plays offline matches</div><div style='font-size: 70%'></div>" .->3
+    3-. "<div>Uses lifecycle, local<br />storage, audio, and graphics<br />APIs</div><div style='font-size: 70%'></div>" .->2
+
+  end
