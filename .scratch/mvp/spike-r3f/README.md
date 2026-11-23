@@ -29,8 +29,7 @@ bundles. They are not native release builds and do not measure GL performance.
 
 ## Native release procedure
 
-The host used for the spike did not have `xcrun simctl`, `adb`, or
-`emulator`, so the native runs are pending. On a provisioned bench:
+On a provisioned bench, build and launch the native release targets:
 
 ```sh
 npx expo prebuild --clean
@@ -58,11 +57,13 @@ unblocked.
 - `npm run bundle:ios`: passed; Hermes bundle generated (4.29 MB).
 - `npm run bundle:android`: passed; Hermes bundle generated (4.30 MB).
 - `npx expo-doctor`: passed, 18/18 checks, after pinning Jest 29.7.0.
-- `npx expo run:ios --configuration Release`: native project and Pods
-  generated, then stopped because Xcode/simctl is not installed/selected.
-- `npx expo run:android --variant release`: native project generated, then
-  stopped because Android SDK/`adb` is absent (`spawn adb ENOENT`).
-
-No FPS, frame-time distribution, or memory values were recorded because
-neither native release app launched. Do not copy placeholder values into QA
-reports.
+- iOS `xcodebuild` Release simulator build: passed; iPhone 17 simulator
+  launched the complete loop at 60.0 FPS average, 16.95 ms p95 frame time,
+  and 214.0 MB peak dirty native VM.
+- Android `./gradlew assembleRelease`: passed; release variant installed with
+  its generated debug keystore. The API 37 emulator completed the loop at
+  22.2 FPS average, 88.35 ms p95 frame time, and 79.8 MB peak PSS
+  (209.1 MB RSS).
+- The Android emulator used software GLES (lavapipe/SwANGLE), so the result is
+  a proxy finding and still fails the hard 55 FPS gate. Physical iPhone
+  11-class/Pixel 6a-class verification remains ticket 11.

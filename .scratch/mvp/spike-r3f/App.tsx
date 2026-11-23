@@ -7,6 +7,7 @@ import * as THREE from "three";
 const PARTICLE_COUNT = 192;
 const BURST_COUNT = 4;
 const LOOP_SECONDS = 10;
+const SETTLE_SECONDS = 2;
 const POOL_SIZE = 4;
 
 type Burst = {
@@ -144,6 +145,10 @@ function Scene({ onFps }: { onFps: (fps: number, frameTime: number) => void }) {
   const startedAt = useRef(0);
   const lastFrame = useRef(0);
   const frameTimes = useRef<number[]>([]);
+  const measuredFrameTimes = useRef<number[]>([]);
+  const lastLoggedSecond = useRef(0);
+  const lastLoggedFrameIndex = useRef(0);
+  const finalLogged = useRef(false);
   const launch = useRef(0);
   const bursts = useRef<Burst[]>(
     Array.from({ length: BURST_COUNT }, () => ({
@@ -155,18 +160,55 @@ function Scene({ onFps }: { onFps: (fps: number, frameTime: number) => void }) {
   const [shieldOpacity, setShieldOpacity] = useState(0.3);
 
   useEffect(() => {
-    startedAt.current = performance.now();
-    lastFrame.current = startedAt.current;
+    const timer = setTimeout(() => {
+      startedAt.current = performance.now();
+      lastFrame.current = startedAt.current;
+    }, SETTLE_SECONDS * 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   useFrame(() => {
     const now = performance.now();
+    if (!startedAt.current) return;
     const elapsed = (now - startedAt.current) / 1000;
     const frameTime = now - lastFrame.current;
     lastFrame.current = now;
     frameTimes.current.push(frameTime);
     if (frameTimes.current.length > 60) frameTimes.current.shift();
-    if (elapsed > LOOP_SECONDS) return;
+    if (elapsed <= LOOP_SECONDS) {
+      measuredFrameTimes.current.push(frameTime);
+    }
+
+    const completedSecond = Math.floor(elapsed);
+    if (completedSecond > lastLoggedSecond.current && completedSecond <= LOOP_SECONDS) {
+      const secondFrames = measuredFrameTimes.current.slice(lastLoggedFrameIndex.current);
+      const averageFrameTime =
+        secondFrames.reduce((sum, value) => sum + value, 0) / Math.max(1, secondFrames.length);
+      console.error(
+        `[R3F_PERF] second=${completedSecond} fps=${(1000 / averageFrameTime).toFixed(1)} ` +
+          `p95FrameMs=${percentile(secondFrames, 0.95).toFixed(2)} ` +
+          `jsHeapMB=${readHeapMBValue()}`,
+      );
+      lastLoggedSecond.current = completedSecond;
+      lastLoggedFrameIndex.current = measuredFrameTimes.current.length;
+    }
+
+    if (elapsed > LOOP_SECONDS) {
+      if (!finalLogged.current) {
+        const averageFrameTime =
+          measuredFrameTimes.current.reduce((sum, value) => sum + value, 0) /
+          Math.max(1, measuredFrameTimes.current.length);
+        console.error(
+          `[R3F_PERF_FINAL] frames=${measuredFrameTimes.current.length} ` +
+            `avgFps=${(1000 / averageFrameTime).toFixed(1)} ` +
+            `p95FrameMs=${percentile(measuredFrameTimes.current, 0.95).toFixed(2)} ` +
+            `maxFrameMs=${Math.max(...measuredFrameTimes.current).toFixed(2)} ` +
+            `jsHeapMB=${readHeapMBValue()}`,
+        );
+        finalLogged.current = true;
+      }
+      return;
+    }
 
     const cycle = elapsed % 2.1;
     if (cycle < 0.05) {
@@ -208,6 +250,16 @@ function Scene({ onFps }: { onFps: (fps: number, frameTime: number) => void }) {
 }
 
 function readHeapMB(): string {
+  const used = readHeapBytes();
+  return used === null ? "native heap: n/a" : `${(used / 1024 / 1024).toFixed(1)} MB JS`;
+}
+
+function readHeapMBValue(): string {
+  const used = readHeapBytes();
+  return used === null ? "n/a" : (used / 1024 / 1024).toFixed(1);
+}
+
+function readHeapBytes(): number | null {
   const memory = (
     globalThis as typeof globalThis & {
       performance?: Performance & {
@@ -215,7 +267,14 @@ function readHeapMB(): string {
       };
     }
   ).performance?.memory;
-  return memory ? `${(memory.usedJSHeapSize / 1024 / 1024).toFixed(1)} MB JS` : "native heap: n/a";
+  return memory?.usedJSHeapSize ?? null;
+}
+
+function percentile(values: number[], percentileValue: number): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((left, right) => left - right);
+  const index = Math.min(sorted.length - 1, Math.ceil(sorted.length * percentileValue) - 1);
+  return sorted[index];
 }
 
 export default function App() {

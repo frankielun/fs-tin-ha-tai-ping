@@ -106,37 +106,39 @@ portrait scene, low-poly fortress, shield dome, pooled projectile, pooled
 instanced burst, a 10-second repeated loop, and an on-screen FPS/JS-heap
 readout.
 
-On 2026-11-23 this host could not complete the requested native release
-builds:
+The first attempt on 2026-11-23 could not complete the requested native
+release builds because Xcode/simctl and the Android SDK/ADB were unavailable.
+That attempt produced no performance numbers. The provisioned rerun below
+completed both native release builds. The spike adds one-second and final
+console aggregates for FPS and frame-time percentiles; platform tools provide
+native process memory.
 
-- iOS: `npx expo run:ios --configuration Release` generated the native
-  project and installed CocoaPods, then stopped because Xcode is not fully
-  installed/selected. Direct `xcrun simctl list devices available` reports
-  `unable to find utility "simctl"`.
-- Android: `npx expo run:android --variant release` generated the native
-  project, then stopped with `Failed to resolve the Android SDK path` and
-  `Error: spawn adb ENOENT`.
+## Measured performance
 
-Therefore there are **no measured FPS, frame-time, or memory numbers** for an
-iOS simulator, Android emulator, or physical device in this report. The
-spike's typecheck, dependency resolution, and JS bundle checks are useful
-static evidence only; they are not a performance result.
+Measured 2026-11-23 with the complete 2-second settle plus 10-second loop:
 
-Required follow-up, owned by fs-qa:
+| Platform | Release target | FPS (average) | p95 frame time | Peak process memory | Result |
+|---|---|---:|---:|---:|---|
+| iOS | iPhone 17 simulator, iOS 27.0, Xcode 27.1 | 60.0 | 16.95 ms | 214.0 MB dirty native VM (`vmmap -summary`) | Passes FPS and memory |
+| Android | `sdk_gphone64_arm64`, API 37 emulator, Android Emulator 37.3.10, software GLES (lavapipe/SwANGLE) | 22.2 | 88.35 ms | 79.8 MB PSS / 209.1 MB RSS (`dumpsys meminfo`) | Fails FPS |
 
-1. Install/select Xcode and an iPhone 11-class iOS simulator, then build a
-   Release configuration and capture 10 seconds of frame times with the
-   overlay plus Instruments Core Animation/Time Profiler and Allocations.
-2. Install Android SDK/emulator and a Pixel 6a-class API image, then build a
-   Release APK, capture the same run, and record `adb shell dumpsys meminfo`
-   before/after and frame timing from Android GPU Inspector or
-   `dumpsys gfxinfo`.
-3. Repeat on physical iPhone 11/A13-class and Pixel 6a-class devices. The
-   simulator/emulator runs are directional only and cannot satisfy the ADR
-   kill criterion.
-4. Record average FPS, minimum FPS, p50/p95/p99 frame time, JS/native peak
-   memory, OS/build image, thermal state, and whether the complete loop ran
-   without a dropped GL context.
+The iOS release build used
+`xcodebuild -workspace ios/R3FRendererSpike.xcworkspace -scheme
+R3FRendererSpike -configuration Release -sdk iphonesimulator`; the app
+launched and completed the loop without a dropped GL context. The Android
+release build used `./gradlew assembleRelease`; the release variant was
+signed with the generated debug keystore for emulator installation only.
+The Android log showed sustained frame-time degradation throughout the loop,
+not just startup variance. Native JS heap reporting was unavailable on both
+Hermes release runs (`jsHeapMB=n/a`); the process-memory figures above are the
+platform-native measurements.
+
+These are simulator/emulator proxy measurements. iPhone 11-class/A13 and
+Pixel 6a-class physical-device floor verification is deferred to ticket 11
+(fs-qa), consistent with ADR 0001 story-17 acceptance. The Android emulator
+also used software GL, so fs-architect must decide whether to treat the
+Android result as a renderer failure or repeat the spike on a hardware-GPU
+proxy before selecting a fallback.
 
 ## Perf budgets for tickets 04–07
 
@@ -175,15 +177,14 @@ These are hard budgets, not targets to average away:
 | Killer constraint | <55 FPS or >250 MB after two optimization passes | Team cannot absorb migration | — |
 | Reversibility | High at the SceneAdapter seam | Medium; preserve engine contracts | — |
 | Dependency bus factor | Expo/RN/R3F/Three: active, but several moving parts | Unity vendor/toolchain concentration | — |
-| Verdict | **SPIKE-FIRST / currently blocked on native measurements** | Reserve as documented fallback | NO-GO for MVP |
+| Verdict | **SPIKE-FIRST / blocked by Android emulator FPS evidence** | Reserve as documented fallback | NO-GO for MVP |
 
 ## Verdict
 
-**RENDERER BLOCKED: native release performance evidence is unavailable on this
-host (no Xcode simulator and no Android emulator/ADB); escalate to
-fs-architect for gate disposition, and do not treat tickets 04–07 as
-renderer-unblocked.** The package graph provides the required Expo GL path on
-paper and is ready for fs-qa's release-build run. If two optimization passes
-on both physical floor devices fail 55 FPS or exceed 250 MB, supersede this
-ADR and reassess Unity while preserving the engine and `SceneAdapter`
-contracts.
+**RENDERER BLOCKED: Android API 37 emulator measured 22.2 FPS average with
+88.35 ms p95 frame time (memory passed); escalate to fs-architect for gate
+disposition and do not treat tickets 04–07 as renderer-unblocked.** iOS
+passed on its iPhone 17 simulator proxy at 60.0 FPS average, 16.95 ms p95,
+and 214.0 MB dirty native VM. Simulator/emulator proxies were measured;
+iPhone 11-class/A13 and Pixel 6a-class physical floor verification remains
+deferred to ticket 11 (fs-qa), consistent with ADR 0001 story-17 acceptance.
