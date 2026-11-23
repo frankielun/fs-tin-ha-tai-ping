@@ -7,7 +7,15 @@ leakage or cheating.
 
 **Blocked by:** 01 — Headless rules engine core
 
-**Status:** ready-for-agent
+**Status:** done ✅ (2026-11-23, graded PASS by fs-pm)
+
+**Grade evidence:** full suite 20/20 (6 AI tests), typecheck clean.
+Fairness: 10,000 seeded rounds within tight per-choice band, alternating
+snapshots to prove no snapshot leakage. Legality: seeded full-match
+sweeps on both difficulties, zero illegal commands. Standard heuristics:
+repair-before-build asserted; cascade-maximizing target 100/100 vs
+Easy measurably lower. Determinism: same seed → identical behavior.
+src/ai imports only src/engine/contracts — framework-free confirmed.
 
 - [ ] AI RPS choices statistically uniform over 10,000 seeded rounds
       (fairness test)
