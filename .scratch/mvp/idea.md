@@ -87,8 +87,10 @@ fs-architect at the architecture gate.
 | Modes | vs AI + pass-and-play | No backend; fastest to real devices |
 | RPS | Player throws personally | Game feel; the game IS RPS-gated |
 | Art | Pure Clash Royale style | User preference (no paper-nostalgia hybrid for MVP) |
-| Tech stack | fs-architect decides | Compare RN+Expo+react-three-fiber vs Unity at architecture stage |
+| Tech stack | Expo React Native + TypeScript + react-three-fiber | fs-architect ADR 0001, signed 2026-11-23; Unity = fallback per kill criterion |
 | Backend | None for MVP | AI + local play only |
+| Min OS floor | iOS 15+ / Android API 26+ | Architect proposal, user-confirmed 2026-11-23; matches current Expo SDK |
+| MVP release channel | TestFlight / Play internal testing only | User-confirmed 2026-11-23; public store review deferred to ship stage |
 
 ## Open questions (non-blocking)
 
