@@ -1,6 +1,6 @@
 # 0002. Pin the Expo/R3F renderer dependency set
 
-Date: 2026-11-23 · Status: accepted with renderer gate outstanding
+Date: 2026-11-24 · Status: accepted with renderer proxy gate passed
 
 ## Decision
 
@@ -115,12 +115,14 @@ native process memory.
 
 ## Measured performance
 
-Measured 2026-11-23 with the complete 2-second settle plus 10-second loop:
+Measured 2026-11-23 and 2026-11-24 with the complete 2-second settle plus
+10-second loop:
 
 | Platform | Release target | FPS (average) | p95 frame time | Peak process memory | Result |
 |---|---|---:|---:|---:|---|
 | iOS | iPhone 17 simulator, iOS 27.0, Xcode 27.1 | 60.0 | 16.95 ms | 214.0 MB dirty native VM (`vmmap -summary`) | Passes FPS and memory |
-| Android | `sdk_gphone64_arm64`, API 37 emulator, Android Emulator 37.3.10, software GLES (lavapipe/SwANGLE) | 22.2 | 88.35 ms | 79.8 MB PSS / 209.1 MB RSS (`dumpsys meminfo`) | Fails FPS |
+| Android | `sdk_gphone64_arm64`, API 37 emulator, Android Emulator 37.3.10, software GLES (lavapipe/SwANGLE) | 22.2 | 88.35 ms | 79.8 MB PSS / 209.1 MB RSS (`dumpsys meminfo`) | Software-GL artifact; not a renderer verdict |
+| Android | `sdk_gphone64_arm64`, API 37 emulator, Android Emulator 37.3.10, `-gpu host` on Apple M2 Max | 59.9 | 20.68 ms | 79.3 MB PSS / 211.6 MB RSS (sampled `dumpsys meminfo`) | Passes FPS and memory on hardware-GPU proxy |
 
 The iOS release build used
 `xcodebuild -workspace ios/R3FRendererSpike.xcworkspace -scheme
@@ -133,12 +135,24 @@ not just startup variance. Native JS heap reporting was unavailable on both
 Hermes release runs (`jsHeapMB=n/a`); the process-memory figures above are the
 platform-native measurements.
 
+For the Android follow-up, the existing AVD was booted with
+`emulator -avd Medium_Phone_API_37.0 -gpu host -no-snapshot -verbose`.
+`adb shell getprop ro.kernel.qemu.gles` returned an empty value on this image,
+but verbose emulator output verified the requested backend and actual
+selection: `gpu_mode_requested: host`,
+`GPU emulation enabled using Vulkan:'host' GLES:'host' modes`,
+`setCurrentRenderer: host host gles:Host vulkan:Host`, and the selected Vulkan
+physical device was `Apple M2 Max`. The hardware-GPU run produced 599 measured
+frames; memory was sampled during the run, with a peak of 79,323 KB PSS and
+211,560 KB RSS. Its 20.68 ms p95 is above the 16.67 ms investigation
+advisory, so tickets 04–07 must continue to watch frame-time distribution even
+though the requested FPS gate passed.
+
 These are simulator/emulator proxy measurements. iPhone 11-class/A13 and
 Pixel 6a-class physical-device floor verification is deferred to ticket 11
-(fs-qa), consistent with ADR 0001 story-17 acceptance. The Android emulator
-also used software GL, so fs-architect must decide whether to treat the
-Android result as a renderer failure or repeat the spike on a hardware-GPU
-proxy before selecting a fallback.
+(fs-qa), consistent with ADR 0001 story-17 acceptance. The earlier Android
+software-GL result is explicitly a measurement artifact and is superseded for
+the renderer gate by the verified host-GPU run.
 
 ## Perf budgets for tickets 04–07
 
@@ -177,14 +191,17 @@ These are hard budgets, not targets to average away:
 | Killer constraint | <55 FPS or >250 MB after two optimization passes | Team cannot absorb migration | — |
 | Reversibility | High at the SceneAdapter seam | Medium; preserve engine contracts | — |
 | Dependency bus factor | Expo/RN/R3F/Three: active, but several moving parts | Unity vendor/toolchain concentration | — |
-| Verdict | **SPIKE-FIRST / blocked by Android emulator FPS evidence** | Reserve as documented fallback | NO-GO for MVP |
+| Verdict | **GO-WITH-CONDITIONS / hardware-GPU proxy passes; physical floor pending** | Reserve as documented fallback | NO-GO for MVP |
 
 ## Verdict
 
-**RENDERER BLOCKED: Android API 37 emulator measured 22.2 FPS average with
-88.35 ms p95 frame time (memory passed); escalate to fs-architect for gate
-disposition and do not treat tickets 04–07 as renderer-unblocked.** iOS
-passed on its iPhone 17 simulator proxy at 60.0 FPS average, 16.95 ms p95,
-and 214.0 MB dirty native VM. Simulator/emulator proxies were measured;
-iPhone 11-class/A13 and Pixel 6a-class physical floor verification remains
-deferred to ticket 11 (fs-qa), consistent with ADR 0001 story-17 acceptance.
+**RENDERER UNBLOCKED: proceed with tickets 04–07 under the pinned set.** The
+verified Android API 37 host-GPU proxy measured 59.9 FPS average, 20.68 ms
+p95 frame time, and 79.3 MB peak PSS / 211.6 MB peak RSS, passing the requested
+hardware-GPU FPS and memory gates. The earlier 22.2 FPS Android result was
+measured with software GLES (lavapipe/SwANGLE) and is explicitly a software-GL
+measurement artifact, not evidence of a shipping renderer failure. The p95
+advisory remains for ticket-level investigation. Simulator/emulator proxies
+were measured; iPhone 11-class/A13 and Pixel 6a-class physical floor
+verification remains deferred to ticket 11 (fs-qa), consistent with ADR 0001
+story-17 acceptance.
