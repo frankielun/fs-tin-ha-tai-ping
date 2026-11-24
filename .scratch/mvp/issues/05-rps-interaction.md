@@ -7,7 +7,14 @@ loop.
 
 **Blocked by:** 04 — App shell + 3D battlefield scene
 
-**Status:** ready-for-agent
+**Status:** done ✅ (2026-11-24, graded PASS by fs-pm)
+
+**Grade evidence:** 33/33 tests (7 new), typecheck clean, engine/ai
+diff empty. Android e2e verified: uiautomator + adb taps through 5+
+rounds — draws auto-replayed, player-win showed the ticket-06
+placeholder, AI-win advanced the round counter and built the 天 plaque
+(screenshots + XML dumps in .scratch/mvp/evidence/05/). iOS
+launch smoke OK (GL-blank-on-sim = documented limitation).
 
 - [ ] Player picks 包/剪/揼 each round via tap/gesture
 - [ ] Exaggerated 3D hand animation plays for both sides before reveal

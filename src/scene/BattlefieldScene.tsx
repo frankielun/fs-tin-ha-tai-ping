@@ -5,8 +5,12 @@ import { t } from "../app/tokens";
 import { FortressBase, FortressPieces, ShieldLayers } from "./pieces";
 import { projectBattlefield } from "./projection";
 import { useBattlefieldResources } from "./resources";
+import { RpsHands, type RpsResolvedEvent } from "./RpsHands";
 
-function Battlefield({ snapshot }: { snapshot: PublicGameSnapshot }) {
+function Battlefield({ snapshot, rpsEvent }: {
+  snapshot: PublicGameSnapshot;
+  rpsEvent: RpsResolvedEvent | null;
+}) {
   const resources = useBattlefieldResources();
   const projection = useMemo(() => projectBattlefield(snapshot), [snapshot]);
   const player1Pieces = useMemo(
@@ -37,17 +41,21 @@ function Battlefield({ snapshot }: { snapshot: PublicGameSnapshot }) {
       </group>
       <ShieldLayers playerId="player1" count={projection.players.player1.shields} resources={resources} />
       <ShieldLayers playerId="player2" count={projection.players.player2.shields} resources={resources} />
+      <RpsHands event={rpsEvent} resources={resources} />
     </>
   );
 }
 
-export function BattlefieldScene({ snapshot }: { snapshot: PublicGameSnapshot }) {
+export function BattlefieldScene({ snapshot, rpsEvent = null }: {
+  snapshot: PublicGameSnapshot;
+  rpsEvent?: RpsResolvedEvent | null;
+}) {
   return (
     <Canvas
       camera={{ position: [0, 12.8, 16.8], fov: 43, near: 0.1, far: 60 }}
       frameloop="always"
     >
-      <Battlefield snapshot={snapshot} />
+      <Battlefield snapshot={snapshot} rpsEvent={rpsEvent} />
     </Canvas>
   );
 }

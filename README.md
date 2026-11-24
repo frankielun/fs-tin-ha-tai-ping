@@ -49,8 +49,9 @@ corepack pnpm install
 ./node_modules/.bin/expo run:android
 ```
 
-Development builds open on a deterministic battlefield. Use **下一個快照：開火**
-to reconcile the next engine-produced snapshot. The headless replay is:
+Normal launches open a real Easy vs-AI match with **包 / 剪 / 揼** input and
+animated 3D hands. The ticket-04 deterministic battlefield remains available to
+QA through `BattlefieldApp debug`; its headless replay is:
 
 ```bash
 ./node_modules/.bin/tsx scripts/app-replay.ts
