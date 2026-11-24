@@ -22,7 +22,7 @@ export const t = {
     plane: "#f4f1de",
   },
   space: { s2: 8, s3: 12, s4: 16, s6: 24 },
-  size: { rpsButton: 68 },
+  size: { rpsButton: 68, actionButton: 48 },
   radius: { panel: 14, button: 10 },
   opacity: { pressed: 0.72, disabled: 0.42 },
   font: { title: 25, body: 14, caption: 12, button: 15, outcome: 20, rps: 32 },

@@ -7,7 +7,16 @@ apply to the engine, and the 3D scene updates immediately.
 **Blocked by:** 02 — Engine fire resolution · 04 — App shell + 3D
 battlefield scene
 
-**Status:** ready-for-agent
+**Status:** done ✅ (2026-11-24, graded PASS by fs-pm)
+
+**Grade evidence:** 35/35 tests (2 new legality tests), typecheck clean,
+engine/ai untouched — legality projects directly from the engine's
+snapshot.availableActions (zero hand-coded UI rule logic). Android e2e
+verified all five actions (寫字/插旗/加罩/起炮/起機/修復) with
+screenshots + uiautomator dumps (.scratch/mvp/evidence/06/). Assigned
+agent hit the OpenCode Go usage limit during the final iOS launch smoke
+— redundant step, skipped by fs-pm: 06 is a pure UI-layer change and
+prior tickets already proved iOS launch.
 
 - [ ] Action menu offers exactly the legal actions for the current state
       and hides illegal ones

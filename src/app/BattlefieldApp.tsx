@@ -1,8 +1,9 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import type { RpsChoice } from "../engine/index";
+import type { Action, RpsChoice } from "../engine/index";
 import { BattlefieldScene } from "../scene/BattlefieldScene";
+import { ActionMenu } from "./ActionMenu";
 import { RPS_LABELS } from "../scene/rps";
 import type { RpsResolvedEvent } from "../scene/RpsHands";
 import { MatchCoordinator } from "./MatchCoordinator";
@@ -40,6 +41,7 @@ export function BattlefieldApp({ debug = false }: { debug?: boolean }) {
   const [rpsEvent, setRpsEvent] = useState<RpsResolvedEvent | null>(null);
   const [outcomeReady, setOutcomeReady] = useState(false);
   const [rpsError, setRpsError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => coordinator.subscribeToEvents((event) => {
     if (event.type === "rpsResolved") {
@@ -76,7 +78,17 @@ export function BattlefieldApp({ debug = false }: { debug?: boolean }) {
     setRpsError(coordinator.getLastError() === null ? null : "呢鋪未能出招，請再試一次。");
   };
 
+  const chooseAction = (action: Action) => {
+    coordinator.dispatch({ type: "chooseAction", action });
+    setActionError(coordinator.getLastError() === null ? null : "行動未能完成，請再試一次。");
+  };
+
   const canChooseRps = !debug && rpsEvent === null && snapshot.status === "rps";
+  const showActionMenu =
+    !debug &&
+    rpsEvent === null &&
+    (snapshot.status === "action" || snapshot.status === "fire") &&
+    snapshot.turnPlayer === "player1";
 
   return (
     <View style={styles.root}>
@@ -106,6 +118,11 @@ export function BattlefieldApp({ debug = false }: { debug?: boolean }) {
             <Text style={styles.caption}>除錯重演 {Math.min(replayIndex + 1, replayCommands.length)} / {replayCommands.length}</Text>
             {replayError === null ? null : <Text style={styles.error}>{replayError}</Text>}
           </>
+        ) : showActionMenu ? (
+          <>
+            <ActionMenu snapshot={snapshot} onChoose={chooseAction} />
+            {actionError === null ? null : <Text style={styles.error}>{actionError}</Text>}
+          </>
         ) : (
           <>
             <Text
@@ -114,11 +131,9 @@ export function BattlefieldApp({ debug = false }: { debug?: boolean }) {
             >
               {rpsEvent !== null
                 ? outcomeReady ? outcomeText(rpsEvent) : "雙方出手！"
-                : snapshot.status === "action" && snapshot.turnPlayer === "player1"
-                  ? "你贏咗呢鋪 — 行動選單即將登場"
-                  : snapshot.status === "over"
-                    ? "對局完結"
-                    : "揀一招，贏咗就可以行動"}
+                : snapshot.status === "over"
+                  ? "對局完結"
+                  : "揀一招，贏咗就可以行動"}
             </Text>
             <View style={styles.rpsButtons}>
               {RPS_BUTTONS.map((choice) => (
