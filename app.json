@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "天下太平 / Tin Ha Tai Ping",
+    "slug": "tin-ha-tai-ping",
+    "scheme": "tinhataiping",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "newArchEnabled": true,
+    "backgroundColor": "#081b2a",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.tinhataiping.game",
+      "infoPlist": {
+        "UIRequiresFullScreen": true
+      }
+    },
+    "android": {
+      "package": "com.tinhataiping.game",
+      "adaptiveIcon": {
+        "backgroundColor": "#081b2a"
+      }
+    }
+  }
+}

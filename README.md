@@ -38,4 +38,32 @@ tickets (under `.scratch/<feature-slug>/`), routes work to specialists, and
 follows up until done. Builds never start without **fs-architect** sign-off.
 Experience is captured in `memory/` by **fs-memory**.
 
-Game design: TBD — shaped with fs-pm.
+## Run the game
+
+The root is an Expo SDK 54 app (New Architecture, portrait-only) with the
+rules engine and AI in `src/engine` and `src/ai`.
+
+```bash
+corepack pnpm install
+./node_modules/.bin/expo run:ios
+./node_modules/.bin/expo run:android
+```
+
+Development builds open on a deterministic battlefield. Use **下一個快照：開火**
+to reconcile the next engine-produced snapshot. The headless replay is:
+
+```bash
+./node_modules/.bin/tsx scripts/app-replay.ts
+```
+
+Static checks and native bundle checks:
+
+```bash
+./node_modules/.bin/vitest run
+./node_modules/.bin/tsc --noEmit
+./node_modules/.bin/expo export --platform ios
+./node_modules/.bin/expo export --platform android
+```
+
+The native `ios/` and `android/` source projects are tracked; build outputs are
+ignored. See `memory/app-map.md` for the snapshot/scene boundaries.

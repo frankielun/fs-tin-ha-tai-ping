@@ -154,6 +154,28 @@ Pixel 6a-class physical-device floor verification is deferred to ticket 11
 software-GL result is explicitly a measurement artifact and is superseded for
 the renderer gate by the verified host-GPU run.
 
+## iOS simulator visual limitation (found 2026-11-24)
+
+Pixel-level verification (center-crop color analysis) shows the GL surface
+renders blank on the iOS **simulator** for BOTH the spike and the game app
+(single color = background), while RN UI layers render normally (262
+colors) and Android renders fully (286 colors). This is a known platform
+limitation, not a defect in this codebase:
+
+- react-three-fiber #2546: "XCode simulator will not push frames on OpenGL
+  which is now deprecated on Apple platforms. Try on a real device."
+  (https://github.com/pmndrs/react-three-fiber/issues/2546)
+- react-three-fiber #3557: "it will not run in the simulator for iOS but
+  works on device (including Expo Go)."
+  (https://github.com/pmndrs/react-three-fiber/issues/3557)
+
+Consequences: the iOS simulator is NOT a visual QA channel for the GL
+surface. iOS visual verification happens on a physical device (ticket 11,
+fs-qa, via TestFlight/dev install). The iOS 60 FPS figure above is JS
+frame-loop timing measured without visual output; on-device visual + FPS
+confirmation is therefore mandatory at ticket 11. Android hardware-GPU
+emulator evidence (59.9 FPS) stands as the visual+perf proxy.
+
 ## Perf budgets for tickets 04–07
 
 These are hard budgets, not targets to average away:

@@ -15,7 +15,7 @@ import {
   type PublicGameSnapshot,
   type RandomSource,
   type RpsChoice,
-} from "./contracts.js";
+} from "./contracts";
 
 const PLAYER_IDS: readonly PlayerId[] = ["player1", "player2"];
 const CHARACTER_NAMES = ["tian", "xia", "tai", "ping"] as const;

@@ -30,3 +30,20 @@ dist/
 .DS_Store
 *.swp
 .idea/
+
+# --- Expo / native build outputs (native source projects are tracked) ---
+.expo/
+*.log
+ios/build/
+ios/Pods/
+ios/.xcode.env.local
+android/build/
+android/app/build/
+android/.gradle/
+android/.kotlin/
+android/local.properties
+android/app/debug.keystore
+*.keystore
+
+# --- Local QA evidence ---
+.scratch/mvp/evidence/
